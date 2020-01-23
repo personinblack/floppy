@@ -40,7 +40,7 @@ impl From<io::Error> for FileError {
 fn path_with_prefix(path: String) -> PathBuf {
     let mut path_pref = PathBuf::from(var("SAVE_DIR").unwrap_or(String::new()));
     path_pref.push(path);
-    return path_pref;
+    path_pref
 }
 
 pub struct File {

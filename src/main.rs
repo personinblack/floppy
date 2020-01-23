@@ -12,7 +12,7 @@ use rocket::response::NamedFile;
 use std::env::var;
 
 pub fn url() -> String {
-    return var("URL").unwrap_or("http://localhost:8000/".to_string());
+    var("URL").unwrap_or("http://localhost:8000/".to_string())
 }
 
 #[get("/")]
