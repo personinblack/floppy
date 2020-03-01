@@ -33,7 +33,7 @@ impl From<&'static str> for FileError {
 
 impl From<io::Error> for FileError {
     fn from(error: io::Error) -> FileError {
-        FileError::Internal{ err: error.description().to_string() }
+        FileError::Internal{ err: error.to_string() }
     }
 }
 
