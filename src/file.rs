@@ -15,8 +15,12 @@ use std::env::var;
 
 #[derive(Debug, Fail)]
 pub enum FileError {
-    #[fail(display = "Sorry, no file for you.")]
+    #[fail(display = "Sorry, no file for you. Might be expired.")]
     NotFound,
+
+    #[fail(display = "Sorry, this file is expired and you can not reach it no
+                     more.")]
+    Expired,
 
     #[fail(display = "Internal Error: {}", err)]
     Internal{ err: String },
