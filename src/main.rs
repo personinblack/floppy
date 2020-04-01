@@ -4,6 +4,7 @@ extern crate chrono;
 extern crate regex;
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate failure;
+#[macro_use] extern crate lazy_static;
 
 mod file;
 use file::{File, FileError};
@@ -11,8 +12,9 @@ use rocket::response::NamedFile;
 
 use std::env::var;
 
-pub fn url() -> String {
-    var("URL").unwrap_or("http://localhost:8000/".to_string())
+lazy_static! {
+    static ref URL: String = var("URL").unwrap_or(
+        "http://localhost:8000/".to_string());
 }
 
 #[get("/")]
@@ -36,13 +38,15 @@ format!("\
 
 [0;1;93mGET:
 > [0;40;90m$ curl {url}?file=8079770645379253334[0;1m
-", url = url())
+", url = *URL)
 }
 
 #[get("/?<file>")]
 fn get_file(file: Result<File, FileError>) -> Result<NamedFile, String> {
     match file {
-        Ok(file) => file.named_file().map_err(|e| e.to_string()),
+        Ok(file) => {
+            file.named_file().map_err(|e| e.to_string())
+        },
         Err(e) => Err(e.to_string())
     }
 }
@@ -50,7 +54,9 @@ fn get_file(file: Result<File, FileError>) -> Result<NamedFile, String> {
 #[put("/<_name>", data = "<file>")]
 fn new_file_named(file: File, _name: Option<String>) -> String {
     match file.save() {
-        Ok(info) => info,
+        Ok(info) => {
+            info
+        },
         Err(e) => e.to_string()
     }
 }
@@ -61,6 +67,8 @@ fn new_file(file: File) -> String {
 }
 
 fn main() {
+    std::env::set_var("ROCKET_PORT",
+                      std::env::var("PORT").unwrap_or("8000".into()));
     rocket::ignite()
         .register(catchers![index])
         .mount("/", routes![index, get_file, new_file,
